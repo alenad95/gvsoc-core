@@ -121,10 +121,18 @@ void loader::reset(bool active)
         }
 
         js::Config *entry_addr_conf = this->get_js_config()->get("entry_addr");
-        if (entry_addr_conf != NULL)
+       if (entry_addr_conf != NULL)
         {
-            uint64_t entry_addr = entry_addr_conf->get_int();
-            this->section_copy(entry_addr, (uint8_t *)&this->entry, this->is_32 ? 4 : 8);
+            js::Config *nb_cores_conf = this->get_js_config()->get("nb_cores");
+            
+            uint32_t nb_cores = 1;
+            if(nb_cores_conf != NULL)
+                nb_cores = nb_cores_conf->get_int();
+            
+            for(uint64_t i=0; i<nb_cores; i++) {
+                uint64_t entry_addr = entry_addr_conf->get_int() + i*4;
+                this->section_copy(entry_addr, (uint8_t *)&this->entry, this->is_32 ? 4 : 8);
+            }
         }
 
         js::Config *fetchen_addr_conf = this->get_js_config()->get("fetchen_addr");

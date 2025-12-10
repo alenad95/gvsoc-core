@@ -43,7 +43,7 @@ class ElfLoader(gvsoc.systree.Component):
     """
     def __init__(self, parent: gvsoc.systree.Component, name: str, binary: str=None,
             binaries: list=None, entry: int=None, entry_addr: int=None,
-            fetchen_addr: int=None, fetchen_value=None):
+            fetchen_addr: int=None, fetchen_value=None, nb_cores: int=None):
 
         super().__init__(parent, name)
 
@@ -76,7 +76,12 @@ class ElfLoader(gvsoc.systree.Component):
                 'fetchen_value': fetchen_value
             })
 
-    def set_binary(self, binary: str):
+        if nb_cores is not None:
+            self.add_properties({
+                'nb_cores': nb_cores
+            })
+
+    def set_binary(self, binary):
 
         self.add_properties({
             'binary': [binary]
