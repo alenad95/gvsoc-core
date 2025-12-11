@@ -129,11 +129,21 @@ void loader::reset(bool active)
             if(nb_cores_conf != NULL)
                 nb_cores = nb_cores_conf->get_int();
             
-                if (nb_cores > entry_addr_conf->get_size())
-                    this->trace.force_warning("nb_cores value (%d) is higher than entry_addr list size (%d)!!", nb_cores, entry_addr_conf->get_size());
+            if ((nb_cores != 1) && (nb_cores != entry_addr_conf->get_size()))
+                this->trace.force_warning("nb_cores value (%d) is different from entry_addr list size (%d)!!", nb_cores, entry_addr_conf->get_size());
 
-            for(uint32_t i=0; i<nb_cores; i++) {
-                uint64_t entry_addr = entry_addr_conf->get_elem(i)->get_int();
+            if (nb_cores > 1)
+            {   for(uint32_t i=0; i<nb_cores; i++) {
+                    uint64_t entry_addr = entry_addr_conf->get_elem(i)->get_int();
+                    this->section_copy(entry_addr, (uint8_t *)&this->entry, this->is_32 ? 4 : 8);
+                }
+            } else
+            {
+                uint64_t entry_addr;
+                if (entry_addr_conf->get_size() == 0)
+                    entry_addr = entry_addr_conf->get_int();
+                else
+                    entry_addr = entry_addr_conf->get_elem(0)->get_int();
                 this->section_copy(entry_addr, (uint8_t *)&this->entry, this->is_32 ? 4 : 8);
             }
         }
